@@ -158,8 +158,11 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen">
-      <div id="n8n-chat" className="min-h-screen" />
+    <main className="h-full w-full flex justify-center bg-[var(--nord0)] sm:p-4">
+      <div
+        id="n8n-chat"
+        className="w-full max-w-3xl h-full overflow-hidden bg-[var(--nord0)] sm:rounded-lg sm:shadow-2xl sm:shadow-black/40 sm:border sm:border-[var(--nord2)]"
+      />
     </main>
   );
 }

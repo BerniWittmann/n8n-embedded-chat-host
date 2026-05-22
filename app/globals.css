@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  height: 100%;
-}
-
 /* ============================================================
    Nord theme for @n8n/chat
    Palette: https://www.nordtheme.com/docs/colors-and-palettes
@@ -93,9 +88,10 @@ body {
   --chat--message--actions--color: var(--nord4);
   --chat--message--actions--hover: var(--nord6);
 
-  /* Input area */
+  /* Input area — flat, no rounded container around the row */
   --chat--input--container--background: var(--nord1);
-  --chat--input--container--border: 1px solid var(--nord2);
+  --chat--input--container--border: none;
+  --chat--input--container--border-radius: 0;
   --chat--input--container--padding: 0.75rem 1rem;
   --chat--input--background: var(--nord2);
   --chat--input--text-color: var(--nord6);
@@ -159,8 +155,51 @@ body {
   --chat--close--button--color-hover: var(--nord11);
 }
 
-/* Make the fullscreen widget actually fill the viewport */
+html,
 body {
+  height: 100%;
   background: var(--nord0);
   color: var(--nord6);
+}
+
+/* Make the embedded widget chain to 100% height */
+#n8n-chat {
+  display: flex;
+  flex-direction: column;
+}
+#n8n-chat > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ============================================================
+   Layout tweaks on @n8n/chat internals
+   ============================================================ */
+
+/* Vertically centre input + send button so a single-line textarea
+   sits in line with the icons (default is flex-end). */
+.chat-inputs {
+  align-items: center !important;
+  border-top: 1px solid var(--nord2) !important;
+}
+
+/* Remove the extra margin around the file/send buttons so they
+   align flush with the textarea height. */
+.chat-input-send-button,
+.chat-input-file-button {
+  margin: 0 0 0 0.5rem !important;
+}
+
+/* Textarea: clear single-line resting state, focus ring on Nord blue. */
+.chat-inputs textarea {
+  border: 1px solid var(--nord2);
+  background: var(--nord2);
+  color: var(--nord6);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.4;
+}
+.chat-inputs textarea:focus {
+  border-color: var(--nord8);
+  outline: none;
 }
