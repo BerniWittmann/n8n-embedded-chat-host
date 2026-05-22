@@ -76,6 +76,7 @@ describe("parseSlugConfig", () => {
         showWelcomeScreen: true,
         allowFileUploads: true,
         allowedFilesMimeTypes: "image/*",
+        enableStreaming: true,
       },
     });
     expect(parseSlugConfig(raw)).toEqual({
@@ -94,6 +95,7 @@ describe("parseSlugConfig", () => {
         showWelcomeScreen: true,
         allowFileUploads: true,
         allowedFilesMimeTypes: "image/*",
+        enableStreaming: true,
       },
     });
   });

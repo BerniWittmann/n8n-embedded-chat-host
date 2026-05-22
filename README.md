@@ -72,13 +72,26 @@ Field semantics:
 - `showWelcomeScreen` (boolean): whether to show the welcome screen with the getStarted button.
 - `allowFileUploads` (boolean): enable the file-upload button.
 - `allowedFilesMimeTypes` (string): comma-separated MIME types when uploads are allowed.
+- `enableStreaming` (boolean): enable streaming responses from the n8n Chat Trigger. Requires the workflow's Chat Trigger response mode to be set to **Streaming response**.
 
 Unknown fields are silently ignored. Entries missing `webhookUrl` are silently dropped. Invalid JSON yields an empty map (all paths return 404). Adding a slug = edit this var in the Cloudflare dashboard; the change is effective on the next request.
 
-**Difference between `defaultGreeting` and `initialMessages`:**
-- `defaultGreeting` → sent to the workflow as `metadata.greeting`. Use this when you want the n8n workflow to compute a personalised first reply.
-- `initialMessages` → static client-side bubbles, never sent to the workflow. Use these for unconditional welcome text.
-- Default for `initialMessages` is `[]`. Default for `showWelcomeScreen` is `false` (the chat lands directly in conversation mode unless you set `getStarted` or `showWelcomeScreen: true`).
+**How greetings work:**
+
+The effective greeting comes from URL `?greeting=` (if non-empty) or the slug's `defaultGreeting`. It is used in two places:
+
+1. **As `metadata.greeting`** sent to the workflow on every user message (workflows can read `{{ $json.metadata.greeting }}` for context).
+2. **As the static initial bot bubble** — when `initialMessages` is not configured for the slug, the greeting becomes a one-element initial messages array, so the user sees it the moment the chat opens.
+
+Resolution priority for the initial bubbles shown on open:
+
+1. `cfg.initialMessages` if defined → use as-is.
+2. Else, effective greeting (URL or `defaultGreeting`) if non-empty → `[greeting]`.
+3. Else → `[]` (no static bubble).
+
+This suppresses the `@n8n/chat` baked-in placeholder ("Hi there! 👋 My name is Nathan…") in every case.
+
+`showWelcomeScreen` defaults to `false` unless the slug sets `getStarted` or explicitly opts in — the chat lands directly in conversation mode.
 
 ### `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD`
 
@@ -128,6 +141,10 @@ Then `curl -i -u admin:pw http://localhost:8788/ai-coach` returns the SPA shell,
 | `pnpm lint` | ESLint (next/core-web-vitals) |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm pages:dev` | wrangler pages dev on the `out/` directory |
+
+## Theme
+
+The widget is styled with the [Nord palette](https://www.nordtheme.com). All Nord overrides live in `app/globals.css` as CSS custom properties that map to `@n8n/chat`'s exposed `--chat--*` variables. To change the look, edit those values in one place.
 
 ## Repository layout
 

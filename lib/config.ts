@@ -14,6 +14,7 @@ export type SlugEntry = {
   showWelcomeScreen?: boolean;
   allowFileUploads?: boolean;
   allowedFilesMimeTypes?: string;
+  enableStreaming?: boolean;
 };
 
 export type SlugConfigMap = Record<string, SlugEntry>;
@@ -93,6 +94,8 @@ export function parseSlugConfig(raw: string | null | undefined): SlugConfigMap {
     const allowedFilesMimeTypes = pickString(entry.allowedFilesMimeTypes);
     if (allowedFilesMimeTypes !== undefined)
       result.allowedFilesMimeTypes = allowedFilesMimeTypes;
+    const enableStreaming = pickBool(entry.enableStreaming);
+    if (enableStreaming !== undefined) result.enableStreaming = enableStreaming;
 
     out[slug] = result;
   }

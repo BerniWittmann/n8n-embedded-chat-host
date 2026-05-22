@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@n8n/chat':
-        specifier: ^0.45.0
-        version: 0.45.0(typescript@5.9.3)
+        specifier: ^1.21.0
+        version: 1.21.0(typescript@5.9.3)
       next:
         specifier: ^15.0.0
         version: 15.5.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -759,8 +759,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@n8n/chat@0.45.0':
-    resolution: {integrity: sha512-c5xr9peBkv5gQHVTwy5U+9/+qJDJcmHIjeCGS3r2lny+cVcokHr/eqvqALwao7evpGqR6N4t1SgE2fP8RUTL7A==}
+  '@n8n/chat@1.21.0':
+    resolution: {integrity: sha512-7gHwci11kqCjNoPPaw4yopyJY0WdFZrGPsRedlZOdyDcVRsZP7euui1cHmeJQZyp4IcDN9RR8a+AhXFax3952A==}
+
+  '@n8n/design-system@2.21.0':
+    resolution: {integrity: sha512-pTXjnoH9eS8kTw2s7xGB1TofckVvIPkdyVV5bgSh7FvbnSclKQoNP512IiR5XrmNEPcufZ2tGs6XK1k2ny1jwA==}
 
   '@napi-rs/wasm-runtime@1.1.4':
     resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
@@ -1969,8 +1972,8 @@ packages:
     resolution: {integrity: sha512-ej4AhfhfL2Q2zpMmLo7U1Uv9+PyhIZpgQLGT1F9miIGmiCJIoCgSmczFdrc97mWT4kVY72KA+WnnhJ5pghSvSg==}
     engines: {node: '>= 0.4'}
 
-  highlight.js@11.11.1:
-    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
+  highlight.js@11.8.0:
+    resolution: {integrity: sha512-MedQhoqVdr0U6SSnWPzfiadUcDHfN/Wzq25AkXiQv9oiOO/sG0S7XkvpFIqWBl9Yq1UYyYOOVORs5UW2XlPyzg==}
     engines: {node: '>=12.0.0'}
 
   html-encoding-sniffer@4.0.0:
@@ -3670,10 +3673,11 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@n8n/chat@0.45.0(typescript@5.9.3)':
+  '@n8n/chat@1.21.0(typescript@5.9.3)':
     dependencies:
+      '@n8n/design-system': 2.21.0
       '@vueuse/core': 10.11.1(vue@3.5.34(typescript@5.9.3))
-      highlight.js: 11.11.1
+      highlight.js: 11.8.0
       markdown-it-link-attributes: 4.0.1
       uuid: 10.0.0
       vue: 3.5.34(typescript@5.9.3)
@@ -3681,6 +3685,8 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - typescript
+
+  '@n8n/design-system@2.21.0': {}
 
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
@@ -5059,7 +5065,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  highlight.js@11.11.1: {}
+  highlight.js@11.8.0: {}
 
   html-encoding-sniffer@4.0.0:
     dependencies:

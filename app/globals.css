@@ -6,3 +6,161 @@ html,
 body {
   height: 100%;
 }
+
+/* ============================================================
+   Nord theme for @n8n/chat
+   Palette: https://www.nordtheme.com/docs/colors-and-palettes
+   nord0  #2e3440  Polar Night - darkest
+   nord1  #3b4252  Polar Night
+   nord2  #434c5e  Polar Night
+   nord3  #4c566a  Polar Night - lightest
+   nord4  #d8dee9  Snow Storm
+   nord5  #e5e9f0  Snow Storm
+   nord6  #eceff4  Snow Storm - brightest
+   nord7  #8fbcbb  Frost
+   nord8  #88c0d0  Frost - primary accent
+   nord9  #81a1c1  Frost
+   nord10 #5e81ac  Frost - deepest
+   nord11 #bf616a  Aurora - red
+   ============================================================ */
+
+:root {
+  --nord0: #2e3440;
+  --nord1: #3b4252;
+  --nord2: #434c5e;
+  --nord3: #4c566a;
+  --nord4: #d8dee9;
+  --nord5: #e5e9f0;
+  --nord6: #eceff4;
+  --nord7: #8fbcbb;
+  --nord8: #88c0d0;
+  --nord9: #81a1c1;
+  --nord10: #5e81ac;
+  --nord11: #bf616a;
+
+  /* @n8n/chat variables */
+  --chat--color-primary: var(--nord8);
+  --chat--color--primary--shade-100: var(--nord9);
+  --chat--color--primary-shade-50: var(--nord10);
+  --chat--color-secondary: var(--nord7);
+  --chat--color-secondary-shade-50: var(--nord7);
+  --chat--color-white: var(--nord6);
+  --chat--color-light: var(--nord1);
+  --chat--color-light-shade-50: var(--nord2);
+  --chat--color-light-shade-100: var(--nord3);
+  --chat--color-medium: var(--nord3);
+  --chat--color-dark: var(--nord0);
+  --chat--color-disabled: var(--nord3);
+  --chat--color-typing: var(--nord4);
+
+  --chat--font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --chat--spacing: 1rem;
+  --chat--border-radius: 0.5rem;
+  --chat--transition-duration: 0.15s;
+
+  /* Body / window */
+  --chat--body--background: var(--nord0);
+  --chat--window--border: 0;
+  --chat--window--border-radius: 0;
+
+  /* Header */
+  --chat--header-height: auto;
+  --chat--header--padding: 1.25rem 1.5rem;
+  --chat--header--background: var(--nord1);
+  --chat--header--color: var(--nord6);
+  --chat--header--border-bottom: 1px solid var(--nord2);
+  --chat--heading--font-size: 1.25rem;
+  --chat--subtitle--font-size: 0.875rem;
+  --chat--subtitle--line-height: 1.4;
+
+  /* Messages */
+  --chat--messages-list--padding: 1rem;
+  --chat--message--font-size: 0.95rem;
+  --chat--message-line-height: 1.5;
+  --chat--message--padding: 0.75rem 1rem;
+  --chat--message--border-radius: 0.5rem;
+  --chat--message--margin-bottom: 0.75rem;
+  --chat--message--bot--background: var(--nord1);
+  --chat--message--bot--color: var(--nord6);
+  --chat--message--bot--border: none;
+  --chat--message--user--background: var(--nord10);
+  --chat--message--user--color: var(--nord6);
+  --chat--message--user--border: none;
+  --chat--message--pre--background: var(--nord2);
+
+  /* Message action icons */
+  --chat--message--actions--color: var(--nord4);
+  --chat--message--actions--hover: var(--nord6);
+
+  /* Input area */
+  --chat--input--container--background: var(--nord1);
+  --chat--input--container--border: 1px solid var(--nord2);
+  --chat--input--container--padding: 0.75rem 1rem;
+  --chat--input--background: var(--nord2);
+  --chat--input--text-color: var(--nord6);
+  --chat--input--border: 1px solid var(--nord2);
+  --chat--input--border-active: 1px solid var(--nord8);
+  --chat--input--border-radius: 0.5rem;
+  --chat--input--padding: 0.625rem 0.875rem;
+  --chat--input--font-size: 0.95rem;
+  --chat--input--placeholder--font-size: 0.95rem;
+
+  /* Send button */
+  --chat--input--send--button--background: var(--nord8);
+  --chat--input--send--button--background-hover: var(--nord9);
+  --chat--input--send--button--color: var(--nord0);
+  --chat--input--send--button--color-hover: var(--nord0);
+
+  /* File upload button */
+  --chat--input--file--button--background: transparent;
+  --chat--input--file--button--background-hover: var(--nord2);
+  --chat--input--file--button--color: var(--nord4);
+  --chat--input--file--button--color-hover: var(--nord6);
+
+  /* Primary buttons (welcome screen "New Conversation") */
+  --chat--button--background--primary: var(--nord8);
+  --chat--button--background--primary--hover: var(--nord9);
+  --chat--button--background--primary--disabled: var(--nord3);
+  --chat--button--color--primary: var(--nord0);
+  --chat--button--color--primary--hover: var(--nord0);
+  --chat--button--color--primary--disabled: var(--nord4);
+  --chat--button--border--primary: 0;
+  --chat--button--border--primary--hover: 0;
+  --chat--button--border--primary--disabled: 0;
+  --chat--button--border-radius: 0.5rem;
+  --chat--button--padding: 0.625rem 1.25rem;
+  --chat--button--font-size: 0.95rem;
+
+  /* Secondary buttons */
+  --chat--button--background--secondary: transparent;
+  --chat--button--background--secondary--hover: var(--nord2);
+  --chat--button--background--secondary--disabled: transparent;
+  --chat--button--color--secondary: var(--nord6);
+  --chat--button--color--secondary--hover: var(--nord6);
+  --chat--button--color--secondary--disabled: var(--nord3);
+  --chat--button--border--secondary: 1px solid var(--nord3);
+  --chat--button--border--secondary--hover: 1px solid var(--nord8);
+  --chat--button--border--secondary--disabled: 1px solid var(--nord3);
+
+  /* Footer */
+  --chat--footer--background: var(--nord1);
+  --chat--footer--color: var(--nord4);
+  --chat--footer--padding: 0.625rem 1rem;
+  --chat--footer--border-top: 1px solid var(--nord2);
+
+  /* Toggle (window mode launcher) */
+  --chat--toggle--background: var(--nord8);
+  --chat--toggle--hover--background: var(--nord9);
+  --chat--toggle--active--background: var(--nord10);
+  --chat--toggle--color: var(--nord0);
+
+  /* Close button */
+  --chat--close--button--color-hover: var(--nord11);
+}
+
+/* Make the fullscreen widget actually fill the viewport */
+body {
+  background: var(--nord0);
+  color: var(--nord6);
+}

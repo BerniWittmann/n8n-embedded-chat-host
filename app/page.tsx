@@ -18,6 +18,7 @@ type ConfigResponse = {
   showWelcomeScreen?: boolean;
   allowFileUploads?: boolean;
   allowedFilesMimeTypes?: string;
+  enableStreaming?: boolean;
 };
 
 type Status = "loading" | "ready" | "not-found" | "error";
@@ -77,12 +78,15 @@ export default function HomePage() {
         const greeting = resolveGreeting(urlGreeting, cfg.defaultGreeting);
 
         const { createChat } = await import("@n8n/chat");
-        // Always set initialMessages explicitly. When unset, @n8n/chat falls
-        // back to a baked-in placeholder ("Hi there! 👋 My name is Nathan…"),
-        // which is never what we want here. Empty array = no static intro;
-        // the workflow's first response (driven by metadata.greeting) becomes
-        // the visible greeting.
-        const initialMessages = cfg.initialMessages ?? [];
+        // Resolve the static intro bubbles shown when the chat opens.
+        // Priority:
+        //   1. cfg.initialMessages (explicit array)
+        //   2. [greeting] when greeting is non-empty
+        //   3. [] (empty — suppresses the @n8n/chat baked-in "Nathan" default)
+        // `metadata.greeting` is still forwarded for workflows that
+        // explicitly read it from the chat trigger payload.
+        const initialMessages: string[] =
+          cfg.initialMessages ?? (greeting ? [greeting] : []);
 
         createChat({
           webhookUrl: cfg.webhookUrl,
@@ -103,6 +107,9 @@ export default function HomePage() {
             : {}),
           ...(cfg.allowedFilesMimeTypes
             ? { allowedFilesMimeTypes: cfg.allowedFilesMimeTypes }
+            : {}),
+          ...(typeof cfg.enableStreaming === "boolean"
+            ? { enableStreaming: cfg.enableStreaming }
             : {}),
           i18n: {
             en: {
