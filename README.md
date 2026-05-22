@@ -67,7 +67,7 @@ Field semantics:
 - `getStarted` (string): label of the welcome-screen button.
 - `inputPlaceholder` (string): placeholder for the message input.
 - `closeButtonTooltip` (string): tooltip for the close button (window mode only).
-- `initialMessages` (string[]): bot bubbles shown before the user types anything. Independent from `defaultGreeting` — these are static UI strings; `defaultGreeting` is data sent to the workflow.
+- `initialMessages` (string[]): bot bubbles shown before the user types anything. Independent from `defaultGreeting` — these are static UI strings; `defaultGreeting` is data sent to the workflow. **Default is `[]` (no static intro)**, not the `@n8n/chat` package default ("Hi there! 👋 My name is Nathan…"). To restore something Nathan-like, set this field explicitly.
 - `mode` (`"fullscreen"` \| `"window"`, default `"fullscreen"`): page mode. `fullscreen` fills the viewport (best for a dedicated chat page); `window` floats a launcher button.
 - `showWelcomeScreen` (boolean): whether to show the welcome screen with the getStarted button.
 - `allowFileUploads` (boolean): enable the file-upload button.
@@ -78,6 +78,7 @@ Unknown fields are silently ignored. Entries missing `webhookUrl` are silently d
 **Difference between `defaultGreeting` and `initialMessages`:**
 - `defaultGreeting` → sent to the workflow as `metadata.greeting`. Use this when you want the n8n workflow to compute a personalised first reply.
 - `initialMessages` → static client-side bubbles, never sent to the workflow. Use these for unconditional welcome text.
+- Default for `initialMessages` is `[]`. Default for `showWelcomeScreen` is `false` (the chat lands directly in conversation mode unless you set `getStarted` or `showWelcomeScreen: true`).
 
 ### `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD`
 

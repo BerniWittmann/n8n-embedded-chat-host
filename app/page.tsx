@@ -77,16 +77,26 @@ export default function HomePage() {
         const greeting = resolveGreeting(urlGreeting, cfg.defaultGreeting);
 
         const { createChat } = await import("@n8n/chat");
+        // Always set initialMessages explicitly. When unset, @n8n/chat falls
+        // back to a baked-in placeholder ("Hi there! 👋 My name is Nathan…"),
+        // which is never what we want here. Empty array = no static intro;
+        // the workflow's first response (driven by metadata.greeting) becomes
+        // the visible greeting.
+        const initialMessages = cfg.initialMessages ?? [];
+
         createChat({
           webhookUrl: cfg.webhookUrl,
           mode: cfg.mode ?? "fullscreen",
           target: "#n8n-chat",
           metadata: { greeting },
-          ...(cfg.initialMessages
-            ? { initialMessages: cfg.initialMessages }
-            : {}),
+          initialMessages,
           ...(typeof cfg.showWelcomeScreen === "boolean"
             ? { showWelcomeScreen: cfg.showWelcomeScreen }
+            : {}),
+          // Skip the welcome screen entirely when neither it nor a getStarted
+          // label is configured — default landing is the chat itself.
+          ...(typeof cfg.showWelcomeScreen !== "boolean" && !cfg.getStarted
+            ? { showWelcomeScreen: false }
             : {}),
           ...(typeof cfg.allowFileUploads === "boolean"
             ? { allowFileUploads: cfg.allowFileUploads }
