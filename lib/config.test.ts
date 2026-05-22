@@ -111,6 +111,38 @@ describe("parseSlugConfig", () => {
     expect(out.demo.initialMessages).toBeUndefined();
   });
 
+  it("parses n8nAuth and force-promotes slug to private", () => {
+    const raw = JSON.stringify({
+      demo: {
+        webhookUrl: "https://example/x",
+        n8nAuth: { user: "admin", pass: "pw" },
+        // explicitly public — should be overridden
+        private: false,
+      },
+    });
+    expect(parseSlugConfig(raw).demo).toEqual({
+      webhookUrl: "https://example/x",
+      defaultGreeting: "",
+      private: true,
+      n8nAuth: { user: "admin", pass: "pw" },
+    });
+  });
+
+  it("drops n8nAuth when user or pass is missing", () => {
+    const raw = JSON.stringify({
+      a: { webhookUrl: "https://e/x", n8nAuth: { user: "only" } },
+      b: { webhookUrl: "https://e/x", n8nAuth: { pass: "only" } },
+      c: { webhookUrl: "https://e/x", n8nAuth: "not-an-object" },
+      d: { webhookUrl: "https://e/x", n8nAuth: ["u", "p"] },
+    });
+    const out = parseSlugConfig(raw);
+    expect(out.a.n8nAuth).toBeUndefined();
+    expect(out.a.private).toBe(false);
+    expect(out.b.n8nAuth).toBeUndefined();
+    expect(out.c.n8nAuth).toBeUndefined();
+    expect(out.d.n8nAuth).toBeUndefined();
+  });
+
   it("rejects invalid mode values", () => {
     const raw = JSON.stringify({
       demo: { webhookUrl: "https://example/x", mode: "popover" },

@@ -73,6 +73,7 @@ Field semantics:
 - `allowFileUploads` (boolean): enable the file-upload button.
 - `allowedFilesMimeTypes` (string): comma-separated MIME types when uploads are allowed.
 - `enableStreaming` (boolean): enable streaming responses from the n8n Chat Trigger. Requires the workflow's Chat Trigger response mode to be set to **Streaming response**.
+- `n8nAuth` (`{ user, pass }`): Basic Auth credentials forwarded to the n8n Chat Trigger webhook on every request via the `Authorization: Basic` header. Use when the Chat Trigger has **Authentication = Basic Auth** so anyone who guesses the webhook URL can't extract data. **Setting `n8nAuth` automatically forces `private: true`** — the `/api/config/<slug>` endpoint refuses unauthenticated callers, so the credentials never leak. Don't commit secrets to git; only set this via Cloudflare's Variables and Secrets UI.
 
 Unknown fields are silently ignored. Entries missing `webhookUrl` are silently dropped. Invalid JSON yields an empty map (all paths return 404). Adding a slug = edit this var in the Cloudflare dashboard; the change is effective on the next request.
 

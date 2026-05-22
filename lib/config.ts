@@ -15,6 +15,13 @@ export type SlugEntry = {
   allowFileUploads?: boolean;
   allowedFilesMimeTypes?: string;
   enableStreaming?: boolean;
+  /**
+   * Optional Basic Auth credentials forwarded to the n8n Chat Trigger
+   * webhook on every request. Setting this field implicitly forces the
+   * slug to `private: true` so the config endpoint cannot leak the
+   * credentials to unauthenticated callers.
+   */
+  n8nAuth?: { user: string; pass: string };
 };
 
 export type SlugConfigMap = Record<string, SlugEntry>;
@@ -35,6 +42,15 @@ function pickStringArray(v: unknown): string[] | undefined {
 
 function pickMode(v: unknown): "window" | "fullscreen" | undefined {
   return v === "window" || v === "fullscreen" ? v : undefined;
+}
+
+function pickN8nAuth(v: unknown): { user: string; pass: string } | undefined {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return undefined;
+  const obj = v as Record<string, unknown>;
+  const user = typeof obj.user === "string" ? obj.user : undefined;
+  const pass = typeof obj.pass === "string" ? obj.pass : undefined;
+  if (!user || !pass) return undefined;
+  return { user, pass };
 }
 
 /**
@@ -96,6 +112,14 @@ export function parseSlugConfig(raw: string | null | undefined): SlugConfigMap {
       result.allowedFilesMimeTypes = allowedFilesMimeTypes;
     const enableStreaming = pickBool(entry.enableStreaming);
     if (enableStreaming !== undefined) result.enableStreaming = enableStreaming;
+    const n8nAuth = pickN8nAuth(entry.n8nAuth);
+    if (n8nAuth !== undefined) {
+      result.n8nAuth = n8nAuth;
+      // Hard invariant: credentials require gating. The /api/config
+      // endpoint only enforces auth for private slugs, so forcing
+      // private here prevents accidental credential exposure.
+      result.private = true;
+    }
 
     out[slug] = result;
   }

@@ -19,6 +19,7 @@ type ConfigResponse = {
   allowFileUploads?: boolean;
   allowedFilesMimeTypes?: string;
   enableStreaming?: boolean;
+  n8nAuth?: { user: string; pass: string };
 };
 
 type Status = "loading" | "ready" | "not-found" | "error";
@@ -88,8 +89,20 @@ export default function HomePage() {
         const initialMessages: string[] =
           cfg.initialMessages ?? (greeting ? [greeting] : []);
 
+        // Forward Basic Auth to the n8n Chat Trigger webhook when configured.
+        const webhookConfig = cfg.n8nAuth
+          ? {
+              method: "POST" as const,
+              headers: {
+                Authorization:
+                  "Basic " + btoa(`${cfg.n8nAuth.user}:${cfg.n8nAuth.pass}`),
+              },
+            }
+          : undefined;
+
         createChat({
           webhookUrl: cfg.webhookUrl,
+          ...(webhookConfig ? { webhookConfig } : {}),
           mode: cfg.mode ?? "fullscreen",
           target: "#n8n-chat",
           metadata: { greeting },
