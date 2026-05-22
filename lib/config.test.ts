@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseSlugConfig, getSlugConfig } from "./config";
+import { parseSlugConfig, getSlugConfig, toPublicConfig } from "./config";
 
 describe("parseSlugConfig", () => {
   it("parses valid JSON with all fields", () => {
@@ -61,6 +61,61 @@ describe("parseSlugConfig", () => {
     expect(Object.keys(out)).toEqual(["good"]);
   });
 
+  it("parses extended UI fields when present", () => {
+    const raw = JSON.stringify({
+      demo: {
+        webhookUrl: "https://example/x",
+        title: "Hi",
+        subtitle: "Sub",
+        footer: "f",
+        getStarted: "Go",
+        inputPlaceholder: "Type",
+        closeButtonTooltip: "x",
+        initialMessages: ["Hello", "World"],
+        mode: "fullscreen",
+        showWelcomeScreen: true,
+        allowFileUploads: true,
+        allowedFilesMimeTypes: "image/*",
+      },
+    });
+    expect(parseSlugConfig(raw)).toEqual({
+      demo: {
+        webhookUrl: "https://example/x",
+        defaultGreeting: "",
+        private: false,
+        title: "Hi",
+        subtitle: "Sub",
+        footer: "f",
+        getStarted: "Go",
+        inputPlaceholder: "Type",
+        closeButtonTooltip: "x",
+        initialMessages: ["Hello", "World"],
+        mode: "fullscreen",
+        showWelcomeScreen: true,
+        allowFileUploads: true,
+        allowedFilesMimeTypes: "image/*",
+      },
+    });
+  });
+
+  it("drops non-string initialMessages entries (whole field ignored)", () => {
+    const raw = JSON.stringify({
+      demo: {
+        webhookUrl: "https://example/x",
+        initialMessages: ["ok", 42, null],
+      },
+    });
+    const out = parseSlugConfig(raw);
+    expect(out.demo.initialMessages).toBeUndefined();
+  });
+
+  it("rejects invalid mode values", () => {
+    const raw = JSON.stringify({
+      demo: { webhookUrl: "https://example/x", mode: "popover" },
+    });
+    expect(parseSlugConfig(raw).demo.mode).toBeUndefined();
+  });
+
   it("ignores wrong-type optional fields, using defaults", () => {
     const raw = JSON.stringify({
       demo: {
@@ -100,5 +155,23 @@ describe("getSlugConfig", () => {
 
   it("does not return inherited properties", () => {
     expect(getSlugConfig(map, "toString")).toBeNull();
+  });
+});
+
+describe("toPublicConfig", () => {
+  it("strips the private flag", () => {
+    const entry = {
+      webhookUrl: "https://example/x",
+      defaultGreeting: "hi",
+      private: true,
+      title: "T",
+    };
+    const out = toPublicConfig(entry);
+    expect(out).toEqual({
+      webhookUrl: "https://example/x",
+      defaultGreeting: "hi",
+      title: "T",
+    });
+    expect("private" in out).toBe(false);
   });
 });

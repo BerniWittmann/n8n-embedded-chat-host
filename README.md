@@ -52,11 +52,32 @@ All runtime config lives in three Cloudflare Pages environment variables:
 ```
 
 Field semantics:
-- `webhookUrl` (required, string): the n8n Chat Trigger webhook URL.
-- `defaultGreeting` (optional, string, default `""`): used as `metadata.greeting` when the URL has no `?greeting=` query (or it's empty).
-- `private` (optional, boolean, default `false`): when true, the slug requires Basic Auth.
 
-Entries missing `webhookUrl` are silently dropped. Invalid JSON yields an empty map (all paths return 404). Adding a slug = edit this var in the Cloudflare dashboard; the change is effective on the next request.
+**Required**
+- `webhookUrl` (string): the n8n Chat Trigger webhook URL.
+
+**Core**
+- `defaultGreeting` (string, default `""`): used as `metadata.greeting` when the URL has no `?greeting=` query (or it's empty). The workflow reads this to drive a dynamic first response.
+- `private` (boolean, default `false`): when true, the slug requires Basic Auth.
+
+**Widget UI (all optional — defaults match n8n Hosted Chat)**
+- `title` (string): widget header title.
+- `subtitle` (string): widget header subtitle.
+- `footer` (string): footer text under the input.
+- `getStarted` (string): label of the welcome-screen button.
+- `inputPlaceholder` (string): placeholder for the message input.
+- `closeButtonTooltip` (string): tooltip for the close button (window mode only).
+- `initialMessages` (string[]): bot bubbles shown before the user types anything. Independent from `defaultGreeting` — these are static UI strings; `defaultGreeting` is data sent to the workflow.
+- `mode` (`"fullscreen"` \| `"window"`, default `"fullscreen"`): page mode. `fullscreen` fills the viewport (best for a dedicated chat page); `window` floats a launcher button.
+- `showWelcomeScreen` (boolean): whether to show the welcome screen with the getStarted button.
+- `allowFileUploads` (boolean): enable the file-upload button.
+- `allowedFilesMimeTypes` (string): comma-separated MIME types when uploads are allowed.
+
+Unknown fields are silently ignored. Entries missing `webhookUrl` are silently dropped. Invalid JSON yields an empty map (all paths return 404). Adding a slug = edit this var in the Cloudflare dashboard; the change is effective on the next request.
+
+**Difference between `defaultGreeting` and `initialMessages`:**
+- `defaultGreeting` → sent to the workflow as `metadata.greeting`. Use this when you want the n8n workflow to compute a personalised first reply.
+- `initialMessages` → static client-side bubbles, never sent to the workflow. Use these for unconditional welcome text.
 
 ### `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD`
 

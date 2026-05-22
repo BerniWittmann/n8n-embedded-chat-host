@@ -6,7 +6,11 @@
 // asset-bypassed /api/* path itself), the config is non-sensitive: the
 // webhookUrl is the same one the page mounts as the chat target.
 
-import { parseSlugConfig, type SlugConfigMap } from "../../../lib/config";
+import {
+  parseSlugConfig,
+  toPublicConfig,
+  type SlugConfigMap,
+} from "../../../lib/config";
 import { isAuthorized } from "../../../lib/auth";
 
 type Env = {
@@ -69,10 +73,7 @@ export const onRequestGet: PagesFunction<Env, Params> = async (context) => {
   }
 
   return new Response(
-    JSON.stringify({
-      webhookUrl: entry.webhookUrl,
-      defaultGreeting: entry.defaultGreeting,
-    }),
+    JSON.stringify(toPublicConfig(entry)),
     {
       status: 200,
       headers: {
