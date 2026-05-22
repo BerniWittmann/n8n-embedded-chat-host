@@ -1,0 +1,175 @@
+{
+  "stage": "interview",
+  "title": "Self-hosted embedded n8n chat page with dynamic greeting",
+  "goalSlug": "embedded-chat-host",
+  "questions": [
+    {
+      "id": "repo-name",
+      "prompt": "What should the repo / directory name be?",
+      "description": "Lives at ~/DEV/<name> and will become a public/private GitHub repo named the same.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "n8n-embedded-chat-host",
+      "recommendedOptionIds": ["n8n-embedded-chat-host"],
+      "options": [
+        { "id": "n8n-embedded-chat-host", "label": "n8n-embedded-chat-host" },
+        { "id": "n8n-chat-host", "label": "n8n-chat-host" },
+        { "id": "chat-greeter", "label": "chat-greeter" }
+      ],
+      "required": true
+    },
+    {
+      "id": "stack",
+      "prompt": "Which stack should we use?",
+      "description": "All three are React + TS + Tailwind. Next.js matches ava-music exactly (static export). Vite is the lightest setup for a single-page embed host. Astro is great for a near-static page with a small React island.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Next.js with `output: 'export'` to match the ava-music setup you already know.",
+      "recommendedOptionIds": ["nextjs"],
+      "options": [
+        { "id": "nextjs", "label": "Next.js (static export) — matches ava-music" },
+        { "id": "vite", "label": "Vite + React (SPA)" },
+        { "id": "astro", "label": "Astro + React island" }
+      ],
+      "required": true
+    },
+    {
+      "id": "hosting",
+      "prompt": "Where should the page be hosted?",
+      "description": "Cloudflare Pages is the cleanest fit because it natively supports either Cloudflare Access OR a basic-auth Pages Function in the same project, and you already have Cloudflare. GitHub Pages would require proxying through a Cloudflare Worker to add auth.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Cloudflare Pages — single platform handles hosting + auth, custom domain via existing Cloudflare DNS.",
+      "recommendedOptionIds": ["cf-pages"],
+      "options": [
+        { "id": "cf-pages", "label": "Cloudflare Pages" },
+        { "id": "gh-pages-cf", "label": "GitHub Pages behind Cloudflare Worker" },
+        { "id": "gh-pages-only", "label": "GitHub Pages only (no auth — public)" }
+      ],
+      "required": true
+    },
+    {
+      "id": "auth-method",
+      "prompt": "How should the page be protected?",
+      "description": "Basic auth via a Cloudflare Pages Function gives the same browser-popup UX as n8n's basic auth and can even share credentials. Cloudflare Access is more secure (email one-time PIN / SSO) but the login flow is different. Shared secret as a URL token is simpler but leakier.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Basic auth via Cloudflare Pages Function so the UX matches n8n and the credentials can be the same single pair stored as Cloudflare env vars.",
+      "recommendedOptionIds": ["basic-auth-fn"],
+      "options": [
+        { "id": "basic-auth-fn", "label": "Basic auth via Cloudflare Pages Function" },
+        { "id": "cf-access", "label": "Cloudflare Access (email OTP / SSO)" },
+        { "id": "url-token", "label": "Shared secret token in URL" },
+        { "id": "none", "label": "No auth on the host page" }
+      ],
+      "required": true
+    },
+    {
+      "id": "auth-creds",
+      "prompt": "Should the host page reuse the n8n basic auth credentials, or have its own?",
+      "description": "Only relevant if you pick basic auth. Same credentials = one mental login. Separate credentials = host page credentials don't leak when sharing the n8n webhook secret.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Separate credentials stored as Cloudflare env vars — the n8n webhook is called from the user's browser anyway, so it still needs its own basic auth from the chat widget.",
+      "recommendedOptionIds": ["separate"],
+      "options": [
+        { "id": "same", "label": "Same as n8n basic auth" },
+        { "id": "separate", "label": "Separate credentials for the host page" }
+      ],
+      "required": false
+    },
+    {
+      "id": "webhook-auth-from-widget",
+      "prompt": "How will the embedded widget authenticate to the n8n webhook?",
+      "description": "The n8n webhook itself sits behind basic auth. @n8n/chat lets you set custom headers on requests. Options: (a) hardcode basic auth header in the page (visible to anyone who has access to the page, but the page itself is already protected), (b) keep n8n webhook unauthenticated for this one chat (rely on host page auth alone), (c) proxy through a Cloudflare Function that injects auth server-side.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Inject basic auth headers in createChat() — the host page is already gated, so the credentials never reach the public internet.",
+      "recommendedOptionIds": ["client-header"],
+      "options": [
+        { "id": "client-header", "label": "Embed Authorization header in createChat()" },
+        { "id": "proxy", "label": "Proxy webhook through a Cloudflare Pages Function" },
+        { "id": "remove-webhook-auth", "label": "Remove basic auth from the chat webhook" }
+      ],
+      "required": true
+    },
+    {
+      "id": "greeting-mechanism",
+      "prompt": "How should the greeting reach the workflow?",
+      "description": "@n8n/chat supports `metadata` on createChat() which is sent on every request and surfaces in the Chat Trigger node. Alternative: pass it as the chat's initial input message. Metadata is cleaner because it doesn't show as a user message.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Pass `?greeting=` into createChat({ metadata: { greeting } }) and read it inside the workflow from the Chat Trigger's metadata.",
+      "recommendedOptionIds": ["metadata"],
+      "options": [
+        { "id": "metadata", "label": "createChat metadata.greeting" },
+        { "id": "initial-message", "label": "Send as the first chat message" },
+        { "id": "both", "label": "Both — metadata and visible greeting message" }
+      ],
+      "required": true
+    },
+    {
+      "id": "greeting-missing",
+      "prompt": "What should happen if the URL has no `?greeting=` param?",
+      "description": "Define the fallback so the workflow always has a deterministic input.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Fall back to a configurable default greeting (set in env / config) and still load the chat normally.",
+      "recommendedOptionIds": ["default"],
+      "options": [
+        { "id": "default", "label": "Use a default greeting string" },
+        { "id": "empty", "label": "Send empty greeting; workflow handles it" },
+        { "id": "block", "label": "Refuse to load chat without greeting" }
+      ],
+      "required": true
+    },
+    {
+      "id": "visual-fidelity",
+      "prompt": "How closely should the page visually match the current hosted chat page?",
+      "description": "Hosted chat renders the @n8n/chat widget on a near-empty page. Embedded chat uses the same widget, so the widget itself looks identical — the only question is the surrounding page chrome.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Match closely — same background, centered widget, no extra chrome. Pixel-perfect not required.",
+      "recommendedOptionIds": ["close"],
+      "options": [
+        { "id": "pixel", "label": "Pixel-perfect match" },
+        { "id": "close", "label": "Close match (centered widget, same bg, no chrome)" },
+        { "id": "branded", "label": "Take liberty — add light personal branding" }
+      ],
+      "required": true
+    },
+    {
+      "id": "domain",
+      "prompt": "What domain / subdomain should it live on?",
+      "description": "You mentioned you have a domain on Cloudflare. Give the subdomain you want (e.g. chat.yourdomain.com) or pick to decide later.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Pick a subdomain on your existing Cloudflare-managed domain, e.g. chat.<yourdomain>.",
+      "recommendedOptionIds": ["subdomain"],
+      "options": [
+        { "id": "subdomain", "label": "Custom subdomain on my domain (I'll provide it)" },
+        { "id": "pages-default", "label": "Use the default *.pages.dev URL" },
+        { "id": "decide-later", "label": "Decide during deploy step" }
+      ],
+      "required": true
+    },
+    {
+      "id": "scope",
+      "prompt": "Scope: just this one workflow, or a generic embeddable host?",
+      "description": "Generic = webhook URL + greeting + maybe other metadata keys are configurable via env or URL. Single = the chat webhook URL is hardcoded for the current workflow.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Single workflow for now, but webhook URL via env var so it's trivially swappable.",
+      "recommendedOptionIds": ["single-env"],
+      "options": [
+        { "id": "single-env", "label": "Single workflow, webhook URL via env var" },
+        { "id": "single-hardcoded", "label": "Single workflow, hardcoded URL" },
+        { "id": "generic", "label": "Generic embeddable host (multi-workflow)" }
+      ],
+      "required": true
+    },
+    {
+      "id": "tests",
+      "prompt": "Should we include automated tests?",
+      "description": "ava-music has Playwright e2e tests. For a thin embed-host page, a small Playwright check that the widget mounts and metadata is forwarded is realistic; unit tests are probably overkill.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "One Playwright e2e covering: (a) widget mounts, (b) ?greeting= reaches the createChat metadata, (c) auth blocks unauthenticated requests.",
+      "recommendedOptionIds": ["playwright-thin"],
+      "options": [
+        { "id": "playwright-thin", "label": "Thin Playwright e2e (widget + metadata + auth)" },
+        { "id": "unit-only", "label": "Unit tests only (parse URL + build metadata)" },
+        { "id": "none", "label": "No automated tests for now" }
+      ],
+      "required": false
+    }
+  ]
+}
