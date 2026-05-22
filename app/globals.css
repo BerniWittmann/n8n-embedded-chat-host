@@ -203,7 +203,11 @@ body {
   margin: 0 0 0 0.5rem !important;
 }
 
-/* Textarea: clear single-line resting state, focus ring on Nord blue. */
+/* Textarea: clear single-line resting state, focus ring on Nord blue.
+   The widget auto-resizes the textarea up to 480px via inline style.
+   We cap the visible height with !important max-height and let the
+   textarea scroll its own content beyond that. afterMessageSent in
+   app/page.tsx resets the inline height after each send. */
 .chat-inputs textarea {
   border: 1px solid var(--nord2);
   background: var(--nord2);
@@ -211,6 +215,8 @@ body {
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   line-height: 1.4;
+  max-height: 12rem !important;
+  overflow-y: auto;
 }
 .chat-inputs textarea:focus {
   border-color: var(--nord8);

@@ -111,6 +111,16 @@ export default function HomePage() {
           ...(typeof cfg.enableStreaming === "boolean"
             ? { enableStreaming: cfg.enableStreaming }
             : {}),
+          afterMessageSent: () => {
+            // The widget auto-grows the textarea up to 480px via inline
+            // `style.height` but only resets that on input/focus/mousedown,
+            // never after a successful send. Reset it ourselves so the
+            // input snaps back to a single-line resting state.
+            const ta = document.querySelector<HTMLTextAreaElement>(
+              '#n8n-chat textarea[data-test-id="chat-input"]',
+            );
+            if (ta) ta.style.height = "var(--chat--textarea--height)";
+          },
           i18n: {
             en: {
               title: cfg.title ?? I18N_DEFAULTS.title,
