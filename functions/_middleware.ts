@@ -69,14 +69,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   const entry = map[slug];
   if (entry.private) {
+    // Per-slug `n8nAuth` credentials take precedence over the global
+    // BASIC_AUTH_* env vars. That way a slug with n8nAuth is
+    // fully self-contained: one credential pair gates both the page
+    // and the n8n webhook.
+    const expectedUser = entry.n8nAuth?.user ?? context.env.BASIC_AUTH_USER;
+    const expectedPass = entry.n8nAuth?.pass ?? context.env.BASIC_AUTH_PASSWORD;
     const auth = context.request.headers.get("authorization");
-    if (
-      !isAuthorized(
-        auth,
-        context.env.BASIC_AUTH_USER,
-        context.env.BASIC_AUTH_PASSWORD,
-      )
-    ) {
+    if (!isAuthorized(auth, expectedUser, expectedPass)) {
       return new Response("Authentication required", {
         status: 401,
         headers: {

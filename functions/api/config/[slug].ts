@@ -52,16 +52,13 @@ export const onRequestGet: PagesFunction<Env, Params> = async (context) => {
   const entry = map[slug];
 
   // The middleware doesn't see /api/* (it's in the asset bypass list), so
-  // we re-enforce auth here for private slugs.
+  // we re-enforce auth here for private slugs. Same precedence rule as
+  // the middleware: per-slug n8nAuth wins over global BASIC_AUTH_*.
   if (entry.private) {
+    const expectedUser = entry.n8nAuth?.user ?? context.env.BASIC_AUTH_USER;
+    const expectedPass = entry.n8nAuth?.pass ?? context.env.BASIC_AUTH_PASSWORD;
     const auth = context.request.headers.get("authorization");
-    if (
-      !isAuthorized(
-        auth,
-        context.env.BASIC_AUTH_USER,
-        context.env.BASIC_AUTH_PASSWORD,
-      )
-    ) {
+    if (!isAuthorized(auth, expectedUser, expectedPass)) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: {

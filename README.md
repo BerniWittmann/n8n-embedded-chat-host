@@ -73,7 +73,7 @@ Field semantics:
 - `allowFileUploads` (boolean): enable the file-upload button.
 - `allowedFilesMimeTypes` (string): comma-separated MIME types when uploads are allowed.
 - `enableStreaming` (boolean): enable streaming responses from the n8n Chat Trigger. Requires the workflow's Chat Trigger response mode to be set to **Streaming response**.
-- `n8nAuth` (`{ user, pass }`): Basic Auth credentials forwarded to the n8n Chat Trigger webhook on every request via the `Authorization: Basic` header. Use when the Chat Trigger has **Authentication = Basic Auth** so anyone who guesses the webhook URL can't extract data. **Setting `n8nAuth` automatically forces `private: true`** — the `/api/config/<slug>` endpoint refuses unauthenticated callers, so the credentials never leak. Don't commit secrets to git; only set this via Cloudflare's Variables and Secrets UI.
+- `n8nAuth` (`{ user, pass }`): Basic Auth credentials forwarded to the n8n Chat Trigger webhook on every request via the `Authorization: Basic` header. Use when the Chat Trigger has **Authentication = Basic Auth** so anyone who guesses the webhook URL can't extract data. **Setting `n8nAuth` automatically forces `private: true`** — the `/api/config/<slug>` endpoint refuses unauthenticated callers, so the credentials never leak. **The same credentials gate the Pages site for this slug** (taking precedence over the global `BASIC_AUTH_*` env vars), so one credential pair covers both the page and the webhook. Don't commit secrets to git; only set this via Cloudflare's Variables and Secrets UI.
 
 Unknown fields are silently ignored. Entries missing `webhookUrl` are silently dropped. Invalid JSON yields an empty map (all paths return 404). Adding a slug = edit this var in the Cloudflare dashboard; the change is effective on the next request.
 
@@ -94,9 +94,16 @@ This suppresses the `@n8n/chat` baked-in placeholder ("Hi there! 👋 My name is
 
 `showWelcomeScreen` defaults to `false` unless the slug sets `getStarted` or explicitly opts in — the chat lands directly in conversation mode.
 
-### `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD`
+### `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD` (optional)
 
-Credentials shared across all `private: true` slugs. Set to the same values as the n8n instance's basic auth.
+Fallback credentials used only by private slugs that don't define their own `n8nAuth`. Set these only if you have private slugs without per-slug credentials.
+
+**Auth resolution per request to a private slug:**
+1. If the slug has `n8nAuth` → expected user/pass are `n8nAuth.user` / `n8nAuth.pass`.
+2. Otherwise → expected user/pass are `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD` env vars.
+3. If neither is configured for a private slug → the slug is unreachable (every request returns 401).
+
+This means a slug with `n8nAuth` is fully self-contained: one credential pair gates both the page and the n8n webhook, and you don't need to set the global env vars at all.
 
 ## Local development
 
