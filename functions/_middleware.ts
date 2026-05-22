@@ -49,6 +49,31 @@ function isAssetPath(pathname: string): boolean {
   return false;
 }
 
+/**
+ * Fetch the SPA shell (out/index.html) from the assets binding and
+ * return it with the given status. Falls back to next() with an
+ * /index.html rewrite when the binding isn't available (older runtime).
+ */
+async function serveShell(
+  context: Parameters<PagesFunction<Env>>[0],
+  url: URL,
+  status: number,
+): Promise<Response> {
+  if (context.env.ASSETS) {
+    const shellUrl = new URL("/index.html", url);
+    const shellReq = new Request(shellUrl.toString(), {
+      method: "GET",
+      headers: context.request.headers,
+    });
+    const res = await context.env.ASSETS.fetch(shellReq);
+    // Re-wrap so we can override the status. Keep the HTML body+headers.
+    const headers = new Headers(res.headers);
+    return new Response(res.body, { status, statusText: res.statusText, headers });
+  }
+  // Best-effort fallback for environments without an ASSETS binding.
+  return context.next("/index.html");
+}
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
   const pathname = url.pathname;
@@ -61,10 +86,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const slug = extractSlug(pathname);
 
   if (!slug || !Object.prototype.hasOwnProperty.call(map, slug)) {
-    return new Response("Not found", {
-      status: 404,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+    // Serve the React SPA shell with a 404 status so app/page.tsx can
+    // render the styled not-found view instead of the browser/edge
+    // showing a default error page.
+    return serveShell(context, url, 404);
   }
 
   const entry = map[slug];
@@ -87,18 +112,5 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
   }
 
-  // Serve the SPA shell for valid slug paths. We can't rely on `next()`
-  // because the slug path has no matching static file, and the `_redirects`
-  // SPA fallback rule (`/* /index.html 200`) is flagged as an infinite loop
-  // by Cloudflare's parser. Fetch /index.html directly from the ASSETS
-  // binding (production) or fall back to next() rewriting to /index.html.
-  if (context.env.ASSETS) {
-    const shellUrl = new URL("/index.html", url);
-    const shellReq = new Request(shellUrl.toString(), {
-      method: "GET",
-      headers: context.request.headers,
-    });
-    return context.env.ASSETS.fetch(shellReq);
-  }
-  return context.next("/index.html");
+  return serveShell(context, url, 200);
 };
