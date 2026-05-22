@@ -61,13 +61,13 @@
 
   /* Header */
   --chat--header-height: auto;
-  --chat--header--padding: 1.25rem 1.5rem;
+  --chat--header--padding: 1.5rem 1.75rem;
   --chat--header--background: var(--nord1);
   --chat--header--color: var(--nord6);
   --chat--header--border-bottom: 1px solid var(--nord2);
-  --chat--heading--font-size: 1.25rem;
-  --chat--subtitle--font-size: 0.875rem;
-  --chat--subtitle--line-height: 1.4;
+  --chat--heading--font-size: 1.75rem;
+  --chat--subtitle--font-size: 0.95rem;
+  --chat--subtitle--line-height: 1.45;
 
   /* Messages */
   --chat--messages-list--padding: 1rem;
@@ -175,6 +175,19 @@ body {
 /* ============================================================
    Layout tweaks on @n8n/chat internals
    ============================================================ */
+
+/* Heading: prominent weight + tracking. The widget exposes a size
+   variable but not a weight one, so override the class directly. */
+.chat-heading {
+  font-weight: 700 !important;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+.chat-header p,
+.chat-header .chat-subtitle {
+  color: var(--nord4);
+}
 
 /* Vertically centre input + send button so a single-line textarea
    sits in line with the icons (default is flex-end). */
